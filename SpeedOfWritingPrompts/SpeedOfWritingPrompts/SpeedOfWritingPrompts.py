@@ -2,8 +2,12 @@
 import praw
 from praw.models import MoreComments
 
-reddit = praw.Reddit(client_id='-',
-                     client_secret='-',
+import operator
+from collections import OrderedDict
+
+
+reddit = praw.Reddit(client_id='kYl1K0MGxqbN2w',
+                     client_secret='5dYrrVHVyDV7jp6kfdoz65_9LZM',
                      user_agent='my user agent')
 
 
@@ -12,15 +16,22 @@ reddit.read_only
 subreddit = reddit.subreddit('writingprompts')
 
 
-analizedSubmissions = 50
+analizedSubmissions = 5
 SolutiontimeMin = 0
 analizedCommentRange = 300
 commentIndex = 0
 isFirtComment = True
+avgTime = 0
 
 sumReplyComment = 0
 
 firstValidReponseTime = 0
+
+#TODO: Use class instead?
+#For data visualization with Plotly:
+plotly_AvgTimeDictionary = {}
+plotly_FirstCommentTimeDictionary = {}
+
 
 for submission in subreddit.top(limit=analizedSubmissions):
     submission.comments.replace_more(limit=0)
@@ -42,29 +53,26 @@ for submission in subreddit.top(limit=analizedSubmissions):
                 sumReplyComment += SolutiontimeMin
                 if(commentIndex == 1):
                     firstValidReponseTime = SolutiontimeMin
-    
-    print("Average Time: %s, First Comment Time %s, out of %s first level comments" % (sumReplyComment / commentIndex, firstValidReponseTime, commentIndex))
+
+    avgTime = round(sumReplyComment / commentIndex,1)
+    plotly_AvgTimeDictionary[submission.title] = avgTime
+    plotly_FirstCommentTimeDictionary[submission.title] = firstValidReponseTime
+
+    print("Average Time: %s, First Comment Time %s, out of %s first level comments" % (avgTime, firstValidReponseTime, commentIndex))
     print(" ")   
     
     commentIndex = 0
     isFirtComment = True
     sumReplyComment = 0
+    avgTime = 0
 
 
 #Todo: Order by average time:
 
 #Prerequisite for visualization
-#orderedDict = OrderedDict(sorted(plotly_SolvedDictionary.items(), key=lambda x: x[1]))
-#
-#
-#generatedList = []
-#nameAvgForTrace = "Average Time: "
-#if(howManySubmissionsAreSolvedByAuthor is not 0):
-#    averageSolutionTime = sumSolutionTime / howManySubmissionsAreSolvedByAuthor
-#    for x in range(0, len(orderedDict.keys())):
-#        generatedList.append(averageSolutionTime)
-#
-#    nameAvgForTrace = "Average Time: " + str(round(averageSolutionTime,1))
+orderedDict = OrderedDict(sorted(plotly_AvgTimeDictionary.items(), key=lambda x: x[1]))
+print(orderedDict)
+
 
 #Todo: Visualize
      
