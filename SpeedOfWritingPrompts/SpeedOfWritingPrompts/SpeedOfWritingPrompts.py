@@ -2,13 +2,15 @@
 import praw
 from praw.models import MoreComments
 
-import operator
-from collections import OrderedDict
+import SubmissionClass
 
 
-reddit = praw.Reddit(client_id='kYl1K0MGxqbN2w',
-                     client_secret='5dYrrVHVyDV7jp6kfdoz65_9LZM',
+reddit = praw.Reddit(client_id='IBmMSzy2se2Igg',
+                     client_secret='9Wa2VKXHAzxNEo7A3zo0wTz-EuE',
                      user_agent='my user agent')
+
+
+
 
 
 
@@ -27,11 +29,7 @@ sumReplyComment = 0
 
 firstValidReponseTime = 0
 
-#TODO: Use class instead?
-#For data visualization with Plotly:
-plotly_AvgTimeDictionary = {}
-plotly_FirstCommentTimeDictionary = {}
-
+submissionObjects = SubmissionClass.SubmissionClass()
 
 for submission in subreddit.top(limit=analizedSubmissions):
     submission.comments.replace_more(limit=0)
@@ -58,6 +56,8 @@ for submission in subreddit.top(limit=analizedSubmissions):
     plotly_AvgTimeDictionary[submission.title] = avgTime
     plotly_FirstCommentTimeDictionary[submission.title] = firstValidReponseTime
 
+    submissionObjects.append(submission.title,avgTime,round(firstValidReponseTime,1))
+
     print("Average Time: %s, First Comment Time %s, out of %s first level comments" % (avgTime, firstValidReponseTime, commentIndex))
     print(" ")   
     
@@ -66,12 +66,8 @@ for submission in subreddit.top(limit=analizedSubmissions):
     sumReplyComment = 0
     avgTime = 0
 
-
-#Todo: Order by average time:
-
-#Prerequisite for visualization
-orderedDict = OrderedDict(sorted(plotly_AvgTimeDictionary.items(), key=lambda x: x[1]))
-print(orderedDict)
+#Print ordered object by average time:
+submissionObjects.print()
 
 
 #Todo: Visualize
