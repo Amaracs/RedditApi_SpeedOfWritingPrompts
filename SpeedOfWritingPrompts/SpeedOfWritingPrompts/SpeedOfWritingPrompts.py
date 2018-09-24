@@ -2,6 +2,11 @@
 import praw
 from praw.models import MoreComments
 
+#Import Plotly API
+import plotly
+import plotly.graph_objs as go
+
+#Import Module for Ordered Complex Class
 import SubmissionClass
 
 
@@ -18,7 +23,7 @@ reddit.read_only
 subreddit = reddit.subreddit('writingprompts')
 
 
-analizedSubmissions = 5
+analizedSubmissions = 5000
 SolutiontimeMin = 0
 analizedCommentRange = 300
 commentIndex = 0
@@ -53,8 +58,7 @@ for submission in subreddit.top(limit=analizedSubmissions):
                     firstValidReponseTime = SolutiontimeMin
 
     avgTime = round(sumReplyComment / commentIndex,1)
-    plotly_AvgTimeDictionary[submission.title] = avgTime
-    plotly_FirstCommentTimeDictionary[submission.title] = firstValidReponseTime
+
 
     submissionObjects.append(submission.title,avgTime,round(firstValidReponseTime,1))
 
@@ -71,6 +75,26 @@ submissionObjects.print()
 
 
 #Todo: Visualize
-     
+
+#Visualization with Plotly
+plotly.offline.plot({
+    "data": [go.Bar(y = submissionObjects.submissionAvgTime,
+                    x = submissionObjects.submissionTitle,
+                    name ='Average Time'),
+             
+             go.Bar(y = submissionObjects.submissionFirstCommentTime,
+                    x = submissionObjects.submissionTitle,
+                    name = 'Top Comment Time')],
+        
+    "layout": go.Layout(title = "How fast are top level comments in r/WritingPrompts compared to average response time",
+                        xaxis = dict(title = 'Submissions',
+                                        titlefont=dict(family='Courier New, monospace',
+                                        size=18,
+                                        color='#7f7f7f')),
+                        yaxis = dict(title = 'Time (min)',
+                                        titlefont=dict(family='Courier New, monospace',
+                                        size=18,
+                                        color='#7f7f7f')))
+}, auto_open=True)
 
 
