@@ -5,8 +5,8 @@ from praw.models import MoreComments
 import SubmissionClass
 
 
-reddit = praw.Reddit(client_id='IBmMSzy2se2Igg',
-                     client_secret='9Wa2VKXHAzxNEo7A3zo0wTz-EuE',
+reddit = praw.Reddit(client_id='-',
+                     client_secret='-',
                      user_agent='my user agent')
 
 
